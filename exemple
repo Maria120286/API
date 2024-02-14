@@ -1,0 +1,115 @@
+import requests
+
+base_url = "https://jsonplaceholder.typicode.com"
+user_id = 1  # Schimbă cu ID-ul utilizatorului dorit
+
+# Obține lista de albume pentru user
+albums_response = requests.get(f"{base_url}/users/{user_id}/albums")
+albums = albums_response.json()[:3]
+remaining_albums = len(albums_response.json()) - 3
+
+# Afisează primele 3 albume
+print("Primele 3 albume:")
+for album in albums:
+    print(f"Album {album['id']}: {album['title']}")
+
+# Afisează numărul de albume rămase
+if remaining_albums > 0:
+    print(f"+{remaining_albums} more albums")
+
+# Obține lista de todos pentru user
+todos_response = requests.get(f"{base_url}/users/{user_id}/todos")
+todos = todos_response.json()[:3]
+remaining_todos = len(todos_response.json()) - 3
+
+# Afisează primele 3 todos
+print("\nPrimele 3 todos:")
+for todo in todos:
+    print(f"Todo {todo['id']}: {todo['title']}")
+
+# Afisează numărul de todos rămase
+if remaining_todos > 0:
+    print(f"+{remaining_todos} more todos")
+
+
+# Alege un post și afișează lista de comentarii
+post_id = 1  # Schimbă cu ID-ul postului dorit
+comments_response = requests.get(f"{base_url}/posts/{post_id}/comments")
+comments = comments_response.json()
+print(f"\nComentarii pentru Post {post_id}:")
+for comment in comments:
+    print(f"Comment {comment['id']}: {comment['name']}")
+
+# Alege un album și afișează lista de photos
+album_id = 1  # Schimbă cu ID-ul albumului dorit
+photos_response = requests.get(f"{base_url}/albums/{album_id}/photos")
+photos = photos_response.json()
+print(f"\nPhotos pentru Album {album_id}:")
+for photo in photos:
+    print(f"Photo {photo['id']}: {photo['title']}")
+
+
+# Creează un post
+new_post_data = {
+    "userId": 1,
+    "title": "New Post Title",
+    "body": "This is the body of the new post."
+}
+new_post_response = requests.post(f"{base_url}/posts", json=new_post_data)
+print("\nRăspuns pentru crearea unui nou post:")
+print(new_post_response.json())
+
+# Adaugă un album nou
+new_album_data = {
+    "userId": 1,
+    "title": "New Album Title"
+}
+new_album_response = requests.post(f"{base_url}/albums", json=new_album_data)
+print("\nRăspuns pentru adăugarea unui nou album:")
+print(new_album_response.json())
+
+# Alege un todo existent
+todo_id = 1  # Schimbă cu ID-ul todo-ului dorit
+
+# Modifică cu metoda PUT
+put_todo_data = {
+    "userId": 1,
+    "id": todo_id,
+    "title": "Updated Todo Title",
+    "completed": True
+}
+put_todo_response = requests.put(f"{base_url}/todos/{todo_id}", json=put_todo_data)
+print("\nRăspuns pentru operația de PUT:")
+print(put_todo_response.json())
+
+# Modifică cu metoda PATCH
+patch_todo_data = {
+    "title": "Patched Todo Title"
+}
+patch_todo_response = requests.patch(f"{base_url}/todos/{todo_id}", json=patch_todo_data)
+print("\nRăspuns pentru operația de PATCH:")
+print(patch_todo_response.json())
+
+
+
+# Alege un album pentru a obține pozele
+album_id = 1  # Schimbă cu ID-ul albumului dorit
+
+# Folosind nested resource
+nested_photos_response = requests.get(f"{base_url}/albums/{album_id}/photos")
+nested_photos = nested_photos_response.json()
+
+# Folosind query params
+query_params_photos_response = requests.get(f"{base_url}/photos", params={"albumId": album_id})
+query_params_photos = query_params_photos_response.json()
+
+# Verifică dacă există diferențe între cele două rezultate
+if nested_photos == query_params_photos:
+    print("\nCele două moduri de obținere a pozelor au același rezultat.")
+else:
+    print("\nExistă diferențe între cele două moduri de obținere a pozelor.")
+
+
+
+
+
